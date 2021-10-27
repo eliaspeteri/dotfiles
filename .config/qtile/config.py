@@ -71,12 +71,12 @@ keys = [
     ),
     Key(
         [],"XF86MonBrightnessDown",
-        lazy.spawn("brightnessctl set 10%-"),
+        lazy.spawn("brightnessctl set 5%-"),
         desc="Decrease monitor brightness"
     ),
     Key(
         [],"XF86MonBrightnessUp",
-        lazy.spawn("brightnessctl set 10%+"),
+        lazy.spawn("brightnessctl set 5%+"),
         desc="Increase monitor brightness"
     ),
 
