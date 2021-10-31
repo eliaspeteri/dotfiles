@@ -16,7 +16,7 @@ if [[ -e /usr/share/zsh/manjaro-zsh-prompt ]]; then
 fi
 
 alias l="ls -lah --color=auto"
-alias vimb="tabbed vimb -e"
+alias vimb="tabbed -c vimb -e"
 alias config="/usr/bin/git --git-dir=$HOME/dotfiles/ --work-tree=$HOME"
 
 # Changing "ls" to "exa"

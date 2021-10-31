@@ -26,7 +26,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from subprocess import check_output, call
+#from subprocess import check_output, call
+import subprocess
+import os
 
 try:
     from typing import List  # noqa: F401
@@ -263,25 +265,24 @@ groups = [
         name='www',
         init=True,
         matches=Match(
-            title=['Mozilla Firefox',
-                   'about:blank'],
             wm_class=[
                 'firefox',
-                'vimb',
+                'tabbed',
             ],
             role=['browser'],
         ),
-        layout="Max",
+        layout="max",
         position=3,
     ),
     Group(
         name='dev',
         matches=Match(
             wm_class=[
-                'Code',
+                'code-oss',
                 'vim'
             ]
-        )
+        ),
+        layout="monadtall",
     ),
     Group(
         init=True,
@@ -293,7 +294,8 @@ groups = [
                 'xterm',
                 'st'
             ]
-        )
+        ),
+        layout="monadtall",
     ),
     Group(
         name='sdr',
@@ -304,30 +306,36 @@ groups = [
                 'rtlsdr'
             ]
         ),
-        layout="Max",
+        layout="max",
     ),
     Group(
         init=True,
         name='keep',
         matches=Match(
             wm_class=['keepassxc']
-        )
+        ),
+        layout="max",
     ),
     Group(
         init=True,
         name='mail',
         matches=Match(
             wm_class=['Thunderbird',
-                      'Claws']
-        )
+                ],
+        ),
+        layout="max",
     ),
     Group(
         init=True,
         name='comms',
         matches=Match(
-            wm_class=['Discord']
+            wm_class=['discord']
         ),
-        layout="Max",
+        layout="max",
+    ),
+    Group(
+        name='files',
+        layout="treetab",
     ),
     Group(
         name='misc'
@@ -359,19 +367,44 @@ for index, grp in enumerate(groups):
         ),
     ])
 
+layout_theme = {
+    "border_width":2,
+    "margin": 8,
+    "border_focus": "e1acff",
+    "border_normal":"1D2330"
+}
+
 layouts = [
-    layout.Columns(border_focus_stack=['#d75f5f', '#8f3d3d'], border_width=4),
-    layout.Max(),
+    #layout.Columns(border_focus_stack=['#d75f5f', '#8f3d3d'], border_width=4),
+    layout.Max(**layout_theme),
     # Try more layouts by unleashing below layouts.
-    # layout.Stack(num_stacks=2),
-    layout.Floating(),
+    layout.Stack(num_stacks=2),
+    layout.Floating(**layout_theme),
     # layout.Bsp(),
-    layout.Matrix(),
-    # layout.MonadTall(),
+    # layout.Matrix(**layout_theme),
+    layout.MonadTall(**layout_theme),
     # layout.MonadWide(),
     # layout.RatioTile(),
     # layout.Tile(),
-    # layout.TreeTab(),
+    layout.TreeTab(
+        fontsize=10,
+        sections=["FIRST","SECOND","THIRD","FOURTH"],
+        section_fontsize=10,
+        border_width=2,
+        bg_color="1c1f24",
+        active_bg="c678dd",
+        active_fg="000000",
+        inactive_bg="a9a1e1",
+        inactive_fg="1c1f24",
+        padding_left=0,
+        padding_x=0,
+        padding_y=5,
+        section_top=10,
+        section_bottom=20,
+        level_shift=8,
+        vspace=3,
+        panel_width=200
+    ),
     # layout.VerticalTile(),
     # layout.Zoomy(),
 ]
@@ -446,10 +479,9 @@ screens = [
                                font="Arial",
                                foreground=theme["bg_dark"]),
                 widget.LaunchBar([
-                                  ('code', 'code', 'launch vscode'),
                                   ('thunderbird', 'thunderbird', 'launch thunderbird'),
                                   ('firefox', 'firefox','launch firefox'),
-                                  ('discord','discord','launch discord')
+                                  ('discord','discord','launch discord'),
                                   ],
                                   padding=5
                 ),
@@ -533,6 +565,11 @@ floating_layout = layout.Floating(float_rules=[
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 reconfigure_screens = True
+
+@hook.subscribe.startup_once
+def start_once():
+    home = os.path.expanduser('~')
+    subprocess.call([home + '/.config/qtile/autostart.sh'])
 
 # If things like steam games want to auto-minimize themselves when losing
 # focus, should we respect this or not?
