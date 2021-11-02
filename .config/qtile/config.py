@@ -247,8 +247,20 @@ keys = [
         desc="Shutdown Qtile"
     ),
     Key(
-        [mod], "r", lazy.spawncmd(),
-        desc="Spawn a command using a prompt widget"
+        #[mod], "r", lazy.spawncmd(),
+        [mod], "r", 
+        lazy.spawn("rofi -show drun"),
+        desc="Spawn rofi",
+    ),
+    Key(
+        [mod], "s",
+        lazy.spawn("rofi -show ssh"),
+        desc="Spawn rofi with ssh input",
+    ),
+    Key(
+        [mod], "w",
+        lazy.spawn("rofi -show window"),
+        desc="Spawn rofi with window lookup",
     ),
     Key(
         [mod], "Left",
@@ -502,6 +514,11 @@ screens = [
                 widget.TextBox(text=u'&#9699;', fontsize=40, padding=-1,
                                font="Arial",
                                foreground=theme["bg_dark"]),
+                widget.NetGraph(frequency=1, interface='auto',
+                                
+                                
+                ),
+                widget.Sep(padding=2, height_percent=90),
                 widget.Wttr(location={'Tampere':'Tampere','Rovaniemi':'Rovaniemi'}, update_interval=30),
                 widget.Sep(padding=2, height_percent=90),
                 widget.CheckUpdates(),
