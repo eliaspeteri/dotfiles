@@ -47,7 +47,7 @@ ctl = "control"
 shift = "shift"
 
 #terminal = guess_terminal()
-terminal = "st"
+terminal = "konsole"
 
 keys = [
     # Media keys
