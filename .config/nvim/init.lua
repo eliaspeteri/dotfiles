@@ -323,6 +323,9 @@ vim.o.termguicolors = true
 
 -- [[ Basic Keymaps ]]
 
+-- Open parent directory
+vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
