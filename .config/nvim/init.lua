@@ -42,6 +42,9 @@ P.S. You can delete this when you're done too. It's your config now :)
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_perl_provider = 0
 
 -- Install package manager
 --    https://github.com/folke/lazy.nvim
@@ -87,12 +90,14 @@ require('lazy').setup({
   ---@type oil.SetupOpts
   opts = {},
   -- Optional dependencies
-  dependencies = { { "echasnovski/mini.icons", opts = {} } },
-  -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
+  -- dependencies = { { "echasnovski/mini.icons", opts = {} } },
+  dependencies = {
+      "nvim-tree/nvim-web-devicons",
+    { "echasnovski/mini.icons", opts = {} }
+    }, -- use if you prefer nvim-web-devicons
   -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
   lazy = false,
   },
-
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
   {
@@ -130,44 +135,44 @@ require('lazy').setup({
 
   -- Useful plugin to show you pending keybinds.
   { 'folke/which-key.nvim', opts = {} },
-  {
-    -- Adds git related signs to the gutter, as well as utilities for managing changes
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      -- See `:help gitsigns.txt`
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-      on_attach = function(bufnr)
-        vim.keymap.set('n', '<leader>hp', require('gitsigns').preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
-
-        -- don't override the built-in and fugitive keymaps
-        local gs = package.loaded.gitsigns
-        vim.keymap.set({ 'n', 'v' }, ']c', function()
-          if vim.wo.diff then
-            return ']c'
-          end
-          vim.schedule(function()
-            gs.next_hunk()
-          end)
-          return '<Ignore>'
-        end, { expr = true, buffer = bufnr, desc = 'Jump to next hunk' })
-        vim.keymap.set({ 'n', 'v' }, '[c', function()
-          if vim.wo.diff then
-            return '[c'
-          end
-          vim.schedule(function()
-            gs.prev_hunk()
-          end)
-          return '<Ignore>'
-        end, { expr = true, buffer = bufnr, desc = 'Jump to previous hunk' })
-      end,
-    },
-  },
+  -- {
+  --   -- Adds git related signs to the gutter, as well as utilities for managing changes
+  --   'lewis6991/gitsigns.nvim',
+  --   opts = {
+  --     -- See `:help gitsigns.txt`
+  --     signs = {
+  --       add = { text = '+' },
+  --       change = { text = '~' },
+  --       delete = { text = '_' },
+  --       topdelete = { text = '‾' },
+  --       changedelete = { text = '~' },
+  --     },
+  --     on_attach = function(bufnr)
+  --       vim.keymap.set('n', '<leader>hp', require('gitsigns').preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
+  --
+  --       -- don't override the built-in and fugitive keymaps
+  --       local gs = package.loaded.gitsigns
+  --       vim.keymap.set({ 'n', 'v' }, ']c', function()
+  --         if vim.wo.diff then
+  --           return ']c'
+  --         end
+  --         vim.schedule(function()
+  --           gs.next_hunk()
+  --         end)
+  --         return '<Ignore>'
+  --       end, { expr = true, buffer = bufnr, desc = 'Jump to next hunk' })
+  --       vim.keymap.set({ 'n', 'v' }, '[c', function()
+  --         if vim.wo.diff then
+  --           return '[c'
+  --         end
+  --         vim.schedule(function()
+  --           gs.prev_hunk()
+  --         end)
+  --         return '<Ignore>'
+  --       end, { expr = true, buffer = bufnr, desc = 'Jump to previous hunk' })
+  --     end,
+  --   },
+  -- },
 
   {
     -- Theme inspired by Atom
@@ -184,7 +189,7 @@ require('lazy').setup({
     -- See `:help lualine.txt`
     opts = {
       options = {
-        icons_enabled = false,
+        icons_enabled = true,
         theme = 'onedark',
         component_separators = '|',
         section_separators = '',
@@ -263,22 +268,18 @@ init = function()
     end,
   },
   {
-    'nvimtools/none-ls.nvim',
+    "folke/trouble.nvim",
+    opts = { use_diagnostic_signs = true },
+    keys = {
+      { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
+      { "<leader>xw", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics" },
+      { "<leader>xr", "<cmd>Trouble lsp_references toggle<cr>", desc = "LSP References (Trouble)" },
+      { "<leader>xd", "<cmd>Trouble lsp_definitions toggle<cr>", desc = "LSP Definitions (Trouble)" },
+    },
   }
-  -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
-  --       These are some example plugins that I've included in the kickstart repository.
-  --       Uncomment any of the lines below to enable them.
-  -- require 'kickstart.plugins.autoformat',
-  -- require 'kickstart.plugins.debug',
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
-  --    up-to-date with whatever is in the kickstart repo.
-  --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --
-  --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  -- { import = 'custom.plugins' },
-}, {})
+}, {
+    rocks = { enabled = false }, -- This is required for some plugins to work correctly.
+  })
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -364,7 +365,7 @@ vim.keymap.set('n', '<Leader>to', ':tabonly<CR>')    -- Map <Leader>to to ':tabo
 vim.keymap.set('n', '<Leader>tc', ':tabclose<CR>')   -- Map <Leader>tc to ':tabclose<CR>'
 
 -- Clear highlights
-vim.keymap.set('n', '<Leader>c', ':nohl<CR>')
+vim.keymap.set('n', '<Leader>nh', ':nohl<CR>', { desc = 'No Highlight' })
 
 -- Remap save
 vim.keymap.set('n', '<Leader>w', ':w<CR>')
@@ -538,7 +539,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 -- [[ Configure LSP ]]
 --  This function gets run when an LSP connects to a particular buffer.
-local on_attach = function(_, bufnr)
+local on_attach = function(client, bufnr)
   -- NOTE: Remember that lua is a real programming language, and as such it is possible
   -- to define small helper and utility functions so you don't have to repeat yourself
   -- many times.
@@ -582,78 +583,110 @@ local on_attach = function(_, bufnr)
   vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
     vim.lsp.buf.format()
   end, { desc = 'Format current buffer with LSP' })
+
+  -- Auto-fix eslint issues on save
+  if client.name == "eslint" then
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      buffer = bufnr,
+      command = "EslintFixAll",
+    })
+  end
+
 end
 
--- document existing key chains
-require('which-key').register {
-  ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-  ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-  ['<leader>g'] = { name = '[G]it', _ = 'which_key_ignore' },
-  ['<leader>h'] = { name = 'More git', _ = 'which_key_ignore' },
-  ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-  ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-  ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
-}
+if not vim.g.__format_cmd_defined then
+  vim.api.nvim_create_user_command('Format', function()
+    local ok = pcall(vim.lsp.buf.format, { async = false })
+    if not ok then
+      vim.notify("No LSP formatter available for this buffer", vim.log.levels.WARN)
+    end
+  end, { desc = 'Format current buffer with LSP' })
+  vim.g.__format_cmd_defined = true
+end
 
--- mason-lspconfig requires that these setup functions are called in this order
--- before setting up the servers.
-require('mason').setup()
-require('mason-lspconfig').setup()
+if not vim.g.__eslint_alias_defined then
+  vim.api.nvim_create_user_command('Es', function()
+    if vim.fn.exists(':EslintFixAll') == 2 then
+      vim.cmd('EslintFixAll')
+    else
+      vim.notify("EslintFixAll not available (is eslint LSP attached here?)", vim.log.levels.WARN)
+    end
+  end, { desc = 'Eslint Fix All (alias)' })
+  vim.g.__eslint_alias_defined = true
+end
 
--- Enable the following language servers
---  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
---
---  Add any additional override configuration in the following tables. They will be passed to
---  the `settings` field of the server config. You must look up that documentation yourself.
---
---  If you want to override the default filetypes that your language server will attach to you can
---  define the property 'filetypes' to the map in question.
+-- document existing key chains (which-key v3)
+local wk = require('which-key')
+wk.add({
+  { "<leader>c", group = "[C]ode" },
+  { "<leader>d", group = "[D]ocument" },
+  { "<leader>g", group = "[G]it" },
+  { "<leader>h", group = "More git" },
+  { "<leader>r", group = "[R]ename" },
+  { "<leader>s", group = "[S]earch" },
+  { "<leader>w", group = "[W]orkspace" },
+})
+
+
+-- Mason + LSP setup (no setup_handlers, fully manual & robust)
+require("mason").setup()
+
+local mason_lspconfig = require("mason-lspconfig")
+mason_lspconfig.setup({
+  ensure_installed = { "lua_ls", "eslint", "jsonls", "yamlls", "ts_ls", "cssls" },
+})
+
+local lspconfig = vim.lsp.config
+
 local servers = {
-  -- clangd = {},
-  -- gopls = {},
-  -- pyright = {},
-  -- rust_analyzer = {},
-  -- tsserver = {},
-  -- html = { filetypes = { 'html', 'twig', 'hbs'} },
-
   lua_ls = {
     Lua = {
-      workspace = { checkThirdParty = false },
+      runtime = { version = "LuaJIT" },
+      workspace = {
+        checkThirdParty = false,
+        -- neodev handles nvim runtime; this extra lib keeps it quiet even outside projects
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      diagnostics = {
+        globals = { "vim" }, -- <- fixes “undefined global 'vim'”
+      },
       telemetry = { enable = false },
     },
   },
-}
-
--- Setup neovim lua configuration
-require('neodev').setup()
-
--- nvim-cmp supports additional completion capabilities, so broadcast that to servers
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-
--- Ensure the servers above are installed
-local mason_lspconfig = require 'mason-lspconfig'
-
-mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers),
-}
-
-mason_lspconfig.setup_handlers {
-  function(server_name)
-    require('lspconfig')[server_name].setup {
-      capabilities = capabilities,
-      on_attach = on_attach,
-      settings = servers[server_name],
-      filetypes = (servers[server_name] or {}).filetypes,
-      init_options = {
-        preferences = {
-          importModuleSpecifierPreference = 'relative',
-          importModuleSpecifierEnding = 'minimal',
-        }
+  -- (you can add per-server overrides for others here if you ever need)
+  eslint = {
+    settings = {
+      experimental = {
+        useFlatConfig = true,
       },
     }
-  end,
+  },
 }
+
+-- The servers you actually want to configure
+local wanted = { "lua_ls", "eslint", "jsonls", "yamlls", "cssls" }
+
+for _, server in ipairs(wanted) do
+  -- per-server settings from your `servers` table (you already define lua_ls there)
+  local settings = (servers and servers[server]) or nil
+  local filetypes = (servers and (servers[server] or {}).filetypes) or nil
+
+  if lspconfig[server] and type(lspconfig[server].setup) == "function" then
+    lspconfig[server].setup({
+      capabilities = capabilities,
+      on_attach = on_attach,
+      settings = settings,
+      filetypes = filetypes,
+      -- harmless for non-TS; useful defaults for TS
+      init_options = {
+        preferences = {
+          importModuleSpecifierPreference = "relative",
+          importModuleSpecifierEnding = "minimal",
+        },
+      },
+    })
+  end
+end
 
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
