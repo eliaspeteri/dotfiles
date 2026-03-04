@@ -77,7 +77,7 @@ if ${use_color} ; then
 
 	alias ls='ls --color=auto'
 	alias l='ls -lah'
-	alias vimb='tabbed vimb -e'
+	#alias vimb='tabbed vimb -e'
 	alias config="/usr/bin/git --git-dir=$HOME/dotfiles/ --work-tree=$HOME"
 	alias grep='grep --colour=auto'
 	alias egrep='egrep --colour=auto'

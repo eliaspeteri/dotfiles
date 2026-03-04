@@ -40,7 +40,7 @@ alias b64decode='pbpaste | base64 --decode | pbcopy'
 alias b64encode='pbpaste | base64 | pbcopy'
 
 alias l="ls -lah --color=auto"
-alias vimb="tabbed -c vimb -e"
+#alias vimb="tabbed -c vimb -e"
 alias config="/usr/bin/git --git-dir=$HOME/dotfiles/ --work-tree=$HOME"
 
 # Changing "ls" to "exa"
